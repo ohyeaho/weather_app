@@ -6,7 +6,7 @@ class Weather {
   double? lon; //経度
   double? lat; //緯度
   String icon; //天気情報のアイコン画像
-  DateTime? time; //日時
+  DateTime time; //日時
   int? rainyPercent; //降水確率
 
   Weather({
@@ -17,7 +17,7 @@ class Weather {
     this.lon,
     this.lat,
     this.icon = '',
-    this.time,
+    required this.time,
     this.rainyPercent,
   });
 }
