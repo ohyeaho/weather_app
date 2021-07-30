@@ -41,8 +41,8 @@ class _TopPageState extends State<TopPage> {
                 Text('最低:${currentWeather.tempMin}°')
               ],
             ),
-            SizedBox(height: 50),
-            Divider(height: 0),
+            const SizedBox(height: 50),
+            const Divider(height: 0),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -52,17 +52,18 @@ class _TopPageState extends State<TopPage> {
                     child: Column(
                       children: [
                         Text('${DateFormat('H').format(weather.time)}時'),
-                        Text('${weather.rainyPercent}%', style: TextStyle(color: Colors.lightBlue)),
-                        Icon(Icons.wb_sunny_sharp),
-                        SizedBox(height: 8),
-                        Text('${weather.temp}°', style: TextStyle(fontSize: 18))
+                        Text('${weather.rainyPercent}%',
+                            style: const TextStyle(color: Colors.lightBlue)),
+                        const Icon(Icons.wb_sunny_sharp, color: Colors.yellow),
+                        const SizedBox(height: 8),
+                        Text('${weather.temp}°', style: const TextStyle(fontSize: 18))
                       ],
                     ),
                   );
                 }).toList(),
               ),
             ),
-            Divider(height: 0)
+            const Divider(height: 0)
           ],
         ),
       ),
