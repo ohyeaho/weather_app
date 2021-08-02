@@ -18,6 +18,9 @@ class Weather {
     this.lat,
     this.icon = '',
     required this.time,
+    // DateTime? time,
+    // this.time = DateTime(),
     this.rainyPercent,
   });
+  // }) : this.time = time ?? DateTime();
 }
