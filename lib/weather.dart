@@ -55,12 +55,14 @@ class Weather {
     }
   }
 
-  static Future<List<Weather>?> getHourlyWeather({double? lon, double? lat}) async {
+  static Future<Map<String, List<Weather>>?> getForecast({double? lon, double? lat}) async {
+    Map<String, List<Weather>>? response = {};
     String url = 'https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&exclude=minutely$publicParameter';
     try {
       var result = await get(Uri.parse(url));
       Map<String, dynamic> data = jsonDecode(result.body);
       List<dynamic> hourlyWeatherData = data['hourly'];
+      List<dynamic> dailyWeatherData = data['daily'];
       List<Weather> hourlyWeather = hourlyWeatherData.map((weather) {
         return Weather(
           time: DateTime.fromMillisecondsSinceEpoch(weather['dt'] * 1000),
@@ -68,7 +70,18 @@ class Weather {
           icon: weather['weather'][0]['icon'],
         );
       }).toList();
-      return hourlyWeather;
+      List<Weather> dailyWeather = dailyWeatherData.map((weather) {
+        return Weather(
+          time: DateTime.fromMillisecondsSinceEpoch(weather['dt'] * 1000),
+          icon: weather['weather'][0]['icon'],
+          tempMax: weather['temp']['max'].toInt(),
+          tempMin: weather['temp']['min'].toInt(),
+          rainyPercent: weather.containsKey('rain') ? weather['rain'].toInt() : 0,
+        );
+      }).toList();
+      response['hourly'] = hourlyWeather;
+      response['daily'] = dailyWeather;
+      return response;
     } catch (e) {
       print(e);
       return null;
