@@ -132,7 +132,7 @@ class _TopPageState extends State<TopPage> {
                         child: Column(
                           children: dailyWeather!.map((weather) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2.0),
+                              padding: const EdgeInsets.symmetric(vertical: 3.0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
