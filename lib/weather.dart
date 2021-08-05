@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 
+/// インスタンス
 class Weather {
   int? temp; // 気温
   int? tempMax; // 最高気温
@@ -10,9 +11,10 @@ class Weather {
   double? lon; //経度
   double? lat; //緯度
   String icon; //天気情報のアイコン画像
-  DateTime time; //日時
+  DateTime? time; //日時
   int? rainyPercent; //降水確率
 
+  /// コンストラクタ
   Weather({
     this.temp,
     this.tempMax,
@@ -21,13 +23,11 @@ class Weather {
     this.lon,
     this.lat,
     this.icon = '',
-    required this.time,
-    // DateTime? time,
-    // this.time = DateTime(),
+    this.time,
     this.rainyPercent,
   });
-  // }) : this.time = time ?? DateTime();
 
+  /// 郵便番号から現在の天気取得
   static String publicParameter = '&appid=91de40c1dbf22fc8ef18b994e54478b6&lang=ja&units=metric';
   static Future<Weather?> getCurrentWeather(String zipCode) async {
     String? _zipCode;
@@ -41,7 +41,6 @@ class Weather {
       var result = await get(Uri.parse(url));
       Map<String, dynamic> data = jsonDecode(result.body);
       Weather currentWeather = Weather(
-          time: DateTime.now(),
           description: data['weather'][0]['description'],
           temp: data['main']['temp'].toInt(),
           tempMax: data['main']['temp_max'].toInt(),
@@ -55,14 +54,16 @@ class Weather {
     }
   }
 
+  /// １時間ごと、日ごとの天気予報取得
   static Future<Map<String, List<Weather>>?> getForecast({double? lon, double? lat}) async {
     Map<String, List<Weather>>? response = {};
     String url = 'https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&exclude=minutely$publicParameter';
     try {
       var result = await get(Uri.parse(url));
       Map<String, dynamic> data = jsonDecode(result.body);
+
+      /// １時間ごとの天気予報
       List<dynamic> hourlyWeatherData = data['hourly'];
-      List<dynamic> dailyWeatherData = data['daily'];
       List<Weather> hourlyWeather = hourlyWeatherData.map((weather) {
         return Weather(
           time: DateTime.fromMillisecondsSinceEpoch(weather['dt'] * 1000),
@@ -70,6 +71,10 @@ class Weather {
           icon: weather['weather'][0]['icon'],
         );
       }).toList();
+      response['hourly'] = hourlyWeather;
+
+      /// 日ごとの天気予報
+      List<dynamic> dailyWeatherData = data['daily'];
       List<Weather> dailyWeather = dailyWeatherData.map((weather) {
         return Weather(
           time: DateTime.fromMillisecondsSinceEpoch(weather['dt'] * 1000),
@@ -79,7 +84,6 @@ class Weather {
           rainyPercent: weather.containsKey('rain') ? weather['rain'].toInt() : 0,
         );
       }).toList();
-      response['hourly'] = hourlyWeather;
       response['daily'] = dailyWeather;
       return response;
     } catch (e) {

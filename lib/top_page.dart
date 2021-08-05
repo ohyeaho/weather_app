@@ -24,9 +24,9 @@ class _TopPageState extends State<TopPage> {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 10),
+            /// 郵便番号入力フォーム
             SizedBox(
-              width: 150,
+              width: 120,
               child: TextField(
                 onSubmitted: (value) async {
                   Map<String, String>? response = {};
@@ -47,25 +47,47 @@ class _TopPageState extends State<TopPage> {
                 cursorColor: Colors.white,
                 decoration: const InputDecoration(
                   focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  icon: Text('〒', style: TextStyle(fontWeight: FontWeight.bold)),
                   hintText: '郵便番号を入力',
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ),
             ),
-            Text(errorMessage == null ? '' : errorMessage!),
-            const SizedBox(height: 10),
-            Text(address!, style: const TextStyle(fontSize: 25)),
-            Text(currentWeather == null ? 'ー' : currentWeather!.description),
-            Text(currentWeather == null ? 'ー' : '${currentWeather!.temp}°', style: const TextStyle(fontSize: 80)),
+
+            /// 郵便番号入力からのエラーを表示
+            errorMessage == null ? Container() : Text(errorMessage!, style: const TextStyle(color: Colors.red)),
+
+            /// 市区町村表示
+            Text(address!, style: const TextStyle(fontSize: 28)),
+
+            /// 天気の情報
+            Text(currentWeather == null ? 'ー' : currentWeather!.description, style: const TextStyle(fontSize: 20)),
+
+            /// 現在の気温
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(currentWeather == null ? '最高:ー' : '最高:${currentWeather!.tempMax}°'),
                 const SizedBox(width: 10),
-                Text(currentWeather == null ? '最低:ー' : '最低:${currentWeather!.tempMin}°'),
+                Text(currentWeather == null ? 'ー' : '${currentWeather!.temp}', style: const TextStyle(fontSize: 90, fontWeight: FontWeight.w200)),
+                SizedBox(
+                  width: 10,
+                  child: Text(currentWeather == null ? '' : '°', style: const TextStyle(fontSize: 90, fontWeight: FontWeight.w200)),
+                ),
               ],
             ),
-            const SizedBox(height: 50),
+
+            /// 現在の最高気温、最低気温
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(currentWeather == null ? '最高:ー' : '最高:${currentWeather!.tempMax}°', style: const TextStyle(fontSize: 20)),
+                const SizedBox(width: 10),
+                Text(currentWeather == null ? '最低:ー' : '最低:${currentWeather!.tempMin}°', style: const TextStyle(fontSize: 20)),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            /// １時間ごとの予報
             const Divider(height: 0, color: Colors.white),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -73,11 +95,12 @@ class _TopPageState extends State<TopPage> {
                   ? Container()
                   : Row(
                       children: hourlyWeather!.map((weather) {
+                        String hourlyTime = '${DateFormat('H').format(weather.time ??= DateTime(0))}時';
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12.0),
                           child: Column(
                             children: [
-                              Text('${DateFormat('H').format(weather.time)}時'),
+                              Text(hourlyTime.substring(0, 1) == '0' ? hourlyTime.substring(1) : hourlyTime, style: const TextStyle(fontSize: 20)),
                               if (weather.icon == '01d')
                                 const Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 14.0),
@@ -86,11 +109,11 @@ class _TopPageState extends State<TopPage> {
                               else if (weather.icon == '01n')
                                 const Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 14.0),
-                                  child: Icon(Icons.nightlight_round),
+                                  child: Icon(Icons.nightlight_round, color: Colors.white),
                                 )
                               else
                                 Image.network('https://openweathermap.org/img/wn/${weather.icon}.png'),
-                              Text('${weather.temp}°', style: const TextStyle(fontSize: 18))
+                              Text('${weather.temp}°', style: const TextStyle(fontSize: 20))
                             ],
                           ),
                         );
@@ -98,58 +121,64 @@ class _TopPageState extends State<TopPage> {
                     ),
             ),
             const Divider(height: 0, color: Colors.white),
+
+            /// 日ごとの予報
             dailyWeather == null
                 ? Container()
                 : Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                         child: Column(
                           children: dailyWeather!.map((weather) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: 50,
-                                  child: Text('${weekDay[weather.time.weekday - 1]}曜日'),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const SizedBox(width: 35),
-                                    if (weather.icon == '01d')
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 5.5, vertical: 5.0),
-                                        child: Icon(Icons.wb_sunny_sharp, color: Colors.yellow),
-                                      )
-                                    else if (weather.icon == '01n')
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 5.5, vertical: 5.0),
-                                        child: Icon(Icons.nightlight_round),
-                                      )
-                                    else
-                                      Image.network('https://openweathermap.org/img/wn/${weather.icon}.png', width: 35),
-                                    SizedBox(
-                                      width: 35,
-                                      child: Text(
-                                        '${weather.rainyPercent}%',
-                                        style: const TextStyle(color: Colors.lightBlue),
-                                        textAlign: TextAlign.end,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 50,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 2.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                    child: Text('${weekDay[weather.time!.weekday - 1]}曜日', style: const TextStyle(fontSize: 20)),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('${weather.tempMax}', style: const TextStyle(fontSize: 16)),
-                                      Text('${weather.tempMin}', style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(0.4)))
+                                      const SizedBox(width: 40),
+                                      if (weather.icon == '01d')
+                                        const SizedBox(height: 30, width: 30, child: Icon(Icons.wb_sunny_sharp, color: Colors.yellow))
+                                      else if (weather.icon == '01n')
+                                        const SizedBox(height: 30, width: 30, child: Icon(Icons.nightlight_round, color: Colors.white))
+                                      else
+                                        SizedBox(
+                                          height: 30,
+                                          width: 30,
+                                          child: Image.network(
+                                            'https://openweathermap.org/img/wn/${weather.icon}.png',
+                                            fit: BoxFit.none,
+                                          ),
+                                        ),
+                                      SizedBox(
+                                        width: 40,
+                                        child: Text(
+                                          '${weather.rainyPercent}%',
+                                          style: const TextStyle(color: Colors.lightBlue, fontSize: 17),
+                                          textAlign: TextAlign.end,
+                                        ),
+                                      )
                                     ],
                                   ),
-                                ),
-                              ],
+                                  SizedBox(
+                                    width: 60,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('${weather.tempMax}', style: const TextStyle(fontSize: 20)),
+                                        Text('${weather.tempMin}', style: TextStyle(fontSize: 20, color: Colors.grey.withOpacity(0.9)))
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           }).toList(),
                         ),
