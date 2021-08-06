@@ -16,15 +16,15 @@ class Weather {
 
   /// コンストラクタ
   Weather({
-    this.temp,
-    this.tempMax,
-    this.tempMin,
-    this.description = '',
-    this.lon,
-    this.lat,
-    this.icon = '',
-    this.time,
-    this.rainyPercent,
+    this.temp, //気温
+    this.tempMax, //最高気温
+    this.tempMin, //最低気温
+    this.description = '', //天気情報
+    this.lon, // 経度
+    this.lat, // 緯度
+    this.icon = '', // 天気アイコン
+    this.time, // 時間
+    this.rainyPercent, // 降水確率
   });
 
   /// 郵便番号(緯度経度)から現在の天気取得
