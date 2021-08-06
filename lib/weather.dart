@@ -39,8 +39,6 @@ class Weather {
         temp: data['main']['temp'].toInt(),
         tempMax: data['main']['temp_max'].toInt(),
         tempMin: data['main']['temp_min'].toInt(),
-        // lon: data['coord']['lon'],
-        // lat: data['coord']['lat'],
       );
       return currentWeather;
     } catch (e) {
