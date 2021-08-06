@@ -13,6 +13,9 @@ class TopPage extends StatefulWidget {
 class _TopPageState extends State<TopPage> {
   Weather? currentWeather;
   String? address = 'ー';
+  String? address2 = 'ー';
+  double? lon;
+  double? lat;
   String? errorMessage;
   List<Weather>? hourlyWeather;
   List<Weather>? dailyWeather;
@@ -34,8 +37,11 @@ class _TopPageState extends State<TopPage> {
                   errorMessage = response!['message'];
                   if (response.containsKey('address')) {
                     address = response['address'];
-                    currentWeather = await Weather.getCurrentWeather(value);
-                    Map<String, List<Weather>>? weatherForecast = await Weather.getForecast(lon: currentWeather!.lon, lat: currentWeather!.lat);
+                    address2 = response['address2'];
+                    lon = double.parse('${response['lon']}');
+                    lat = double.parse('${response['lat']}');
+                    currentWeather = await Weather.getCurrentWeather(lon: lon, lat: lat);
+                    Map<String, List<Weather>>? weatherForecast = await Weather.getForecast(lon: lon, lat: lat);
                     hourlyWeather = weatherForecast!['hourly'];
                     dailyWeather = weatherForecast['daily'];
                   }
@@ -60,7 +66,11 @@ class _TopPageState extends State<TopPage> {
             /// 市区町村表示
             Text(address!, style: const TextStyle(fontSize: 28)),
 
+            /// 町名
+            Text(address2!, style: const TextStyle(fontSize: 23)),
+
             /// 天気の情報
+            const SizedBox(height: 10),
             Text(currentWeather == null ? 'ー' : currentWeather!.description, style: const TextStyle(fontSize: 20)),
 
             /// 現在の気温

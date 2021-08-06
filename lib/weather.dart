@@ -27,26 +27,21 @@ class Weather {
     this.rainyPercent,
   });
 
-  /// 郵便番号から現在の天気取得
+  /// 郵便番号(緯度経度)から現在の天気取得
   static String publicParameter = '&appid=91de40c1dbf22fc8ef18b994e54478b6&lang=ja&units=metric';
-  static Future<Weather?> getCurrentWeather(String zipCode) async {
-    String? _zipCode;
-    if (zipCode.contains('-')) {
-      _zipCode = zipCode;
-    } else {
-      _zipCode = zipCode.substring(0, 3) + '-' + zipCode.substring(3);
-    }
-    String url = 'https://api.openweathermap.org/data/2.5/weather?zip=$_zipCode,JP$publicParameter';
+  static Future<Weather?> getCurrentWeather({double? lon, double? lat}) async {
+    String url = 'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon$publicParameter';
     try {
       var result = await get(Uri.parse(url));
       Map<String, dynamic> data = jsonDecode(result.body);
       Weather currentWeather = Weather(
-          description: data['weather'][0]['description'],
-          temp: data['main']['temp'].toInt(),
-          tempMax: data['main']['temp_max'].toInt(),
-          tempMin: data['main']['temp_min'].toInt(),
-          lon: data['coord']['lon'],
-          lat: data['coord']['lat']);
+        description: data['weather'][0]['description'],
+        temp: data['main']['temp'].toInt(),
+        tempMax: data['main']['temp_max'].toInt(),
+        tempMin: data['main']['temp_min'].toInt(),
+        // lon: data['coord']['lon'],
+        // lat: data['coord']['lat'],
+      );
       return currentWeather;
     } catch (e) {
       print(e);
